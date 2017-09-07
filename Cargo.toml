@@ -1,0 +1,7 @@
+[package]
+name = "secret-cmd"
+version = "0.1.0"
+authors = ["Nami.WANG <namiheike@gmail.com>"]
+
+[dependencies]
+clap = {version = "2.26.0", features = ["yaml"]}

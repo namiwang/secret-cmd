@@ -1,0 +1,19 @@
+name: secret
+version: "0.1"
+author: Nami W. <namiheike@gmail.com>
+about: A secret command in your terminal
+
+# args:
+
+subcommands:
+  - notes:
+      about: TODO
+      subcommands:
+        - new:
+            about: create a new note
+            args:
+              - name:
+                  help: TODO
+                  required: true
+        - list:
+            about: list all notes
