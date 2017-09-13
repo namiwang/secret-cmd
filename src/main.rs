@@ -1,5 +1,7 @@
 extern crate uuid;
 
+#[macro_use] extern crate prettytable;
+
 #[macro_use] extern crate clap;
 use clap::{App, ArgMatches};
 
@@ -77,21 +79,30 @@ fn handle_notes_new(matches: &ArgMatches, globals: &Globals) {
 }
 
 fn handle_notes_list(matches: &ArgMatches, globals: &Globals) {
-    println!("*** HANDLEING COMMAND: notes list");
-    println!("args: {:?}", matches); // TODO only in debug
+    use prettytable::Table;
 
     use initializers::schema::notes::dsl::*;
+
+    // ===
+
+    println!("*** HANDLEING COMMAND: notes list");
+    println!("args: {:?}", matches); // TODO only in debug
 
     let notes_list = notes.load::<Note>(&globals.db_conn)
         .expect("Error loading notes"); // TODO copywriting
 
     println!("{} notes founded", notes_list.len());
 
-    // TODO table
-    // https://github.com/phsym/prettytable-rs
-    for note in notes_list {
-        println!("{}", note.title);
-        println!("----------\n");
-        println!("{}", note.encrypted_content.len());
+    if notes_list.len() > 0 {
+        let mut table = Table::new();
+
+        table.add_row(row!["index", "title", "content size after encrypted", "updated at"]);
+        for (index, note) in notes_list.iter().enumerate() {
+            // TODO dummy timestamp
+            table.add_row(row![index, note.title, note.encrypted_content.len(), "2017-01-01 12:10"]);
+        }
+
+        table.printstd();
     }
+
 }
