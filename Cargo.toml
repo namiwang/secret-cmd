@@ -9,3 +9,5 @@ clap = {version = "2.26.0", features = ["yaml"]}
 
 diesel = { version = "0.15.0", features = ["sqlite"] }
 diesel_codegen = { version = "0.15.0", features = ["sqlite"] }
+
+uuid = { version = "0.5", features = ["v4"] }

@@ -12,7 +12,7 @@ subcommands:
         - new:
             about: create a new note
             args:
-              - name:
+              - title:
                   help: TODO
                   required: true
         - list:
