@@ -24,10 +24,17 @@ fn main() {
 }
 
 fn init_globals() -> Globals {
-    let db_path = initializers::database::get_db_path();
+    println!("init globals...");
+
+    let db_path = initializers::database::get_db_path_from_env().expect("TODO ENV DB PATH NOT EXISTS");
+
+    // init schema
+    use initializers::db_schema;
+
     let db_conn = initializers::database::establish_connection(&db_path);
 
     println!("init globals...");
+    println!("db_path: {}", db_path);
 
     Globals {
         db_path,
