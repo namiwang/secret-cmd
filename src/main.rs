@@ -22,9 +22,12 @@ fn main() {
     let cli_config = load_yaml!("config/cli.yml");
     let cli_matches = App::from_yaml(cli_config).get_matches();
 
-    let globals = init_globals();
+    let mut globals = init_globals();
 
     match cli_matches.subcommand_name() {
+        Some("auth") => {
+            handle_auth(cli_matches.subcommand_matches("auth").unwrap(), &mut globals);
+        },
         Some("notes") => {
             handle_notes(cli_matches.subcommand_matches("notes").unwrap(), &globals);
         },
@@ -44,6 +47,27 @@ fn init_globals() -> Globals {
     Globals {
         db_path,
         db_conn
+    }
+}
+
+fn handle_auth(matches: &ArgMatches, globals: &mut Globals) {
+    info!("HANDLING COMMAND: auth");
+    info!("with args: {:?}", matches);
+
+    // TODO what if already authed
+
+    // TODO match result and handle error
+    if session_controller::create(&globals) {
+        println!("Password correct. "); // TODO copywriting
+        // TODO generate key and save in globals
+        // TODO save os-wise env
+        // REF https://stackoverflow.com/questions/496702/can-a-shell-script-set-environment-variables-of-the-calling-shell
+        // REF https://stackoverflow.com/questions/16618071/can-i-export-a-variable-to-the-environment-from-a-bash-script-without-sourcing-i
+        // TODO
+        // and if there isn't any proper and elegant way to do so, we should consider other solutions
+        // say, a REPL-like thing
+    } else {
+        println!("Password incorrect. Aborting.");
     }
 }
 

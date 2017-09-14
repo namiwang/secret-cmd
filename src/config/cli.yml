@@ -6,6 +6,8 @@ about: A secret command in your terminal
 # args:
 
 subcommands:
+  - auth:
+      about: TODO
   - notes:
       about: TODO
       subcommands:
