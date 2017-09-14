@@ -1,4 +1,3 @@
-// use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 
 pub struct Globals {

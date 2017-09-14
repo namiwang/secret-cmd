@@ -9,13 +9,14 @@ use clap::{App, ArgMatches};
 
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate diesel_codegen;
-use diesel::prelude::*;
 
-mod initializers;
-use initializers::globals::Globals as Globals;
+mod shared;
+use shared::globals::Globals as Globals;
 
 mod models;
-use models::note::*;
+
+mod controllers;
+use controllers::*;
 
 fn main() {
     let cli_config = load_yaml!("config/cli.yml");
@@ -34,12 +35,9 @@ fn main() {
 fn init_globals() -> Globals {
     info!("init globals...");
 
-    let db_path = initializers::database::get_db_path_from_env().expect("TODO ENV DB PATH NOT EXISTS");
+    let db_path = shared::database::get_db_path_from_env().expect("TODO ENV DB PATH NOT EXISTS");
 
-    // init schema
-    use initializers::schema;
-
-    let db_conn = initializers::database::establish_connection(&db_path);
+    let db_conn = shared::database::establish_connection(&db_path);
 
     info!("db_path: {}", db_path);
 
@@ -50,8 +48,8 @@ fn init_globals() -> Globals {
 }
 
 fn handle_notes(matches: &ArgMatches, globals: &Globals) {
-    info!("handle notes");
-    info!("{:?}", matches);
+    info!("HANDLING COMMAND: notes");
+    info!("with args: {:?}", matches);
 
     match matches.subcommand_name() {
         Some("new") => {
@@ -66,11 +64,11 @@ fn handle_notes(matches: &ArgMatches, globals: &Globals) {
 
 fn handle_notes_new(matches: &ArgMatches, globals: &Globals) {
     info!("HANDLEING COMMAND: notes new");
-    info!("args: {:?}", matches); // TODO only in debug
+    info!("with args: {:?}", matches);
 
     let creating_note_title = matches.value_of("title").unwrap().to_string();
 
-    match models::note::create(&globals.db_conn, &creating_note_title) {
+    match notes_controller::create(&globals, &creating_note_title) {
         Ok(row_altered) => {
             println!("Note \"{}\" has been saved.", creating_note_title)
         } ,
@@ -78,33 +76,20 @@ fn handle_notes_new(matches: &ArgMatches, globals: &Globals) {
             panic!("Failed to save the node: {:?}", err)
         }
     }
+
+    // match models::note::create(&globals.db_conn, &creating_note_title) {
+    //     Ok(row_altered) => {
+    //         println!("Note \"{}\" has been saved.", creating_note_title)
+    //     } ,
+    //     Err(err) => {
+    //         panic!("Failed to save the node: {:?}", err)
+    //     }
+    // }
 }
 
 fn handle_notes_list(matches: &ArgMatches, globals: &Globals) {
-    use prettytable::Table;
-
-    use initializers::schema::notes::dsl::*;
-
-    // ===
-
     info!("HANDLEING COMMAND: notes list");
-    info!("args: {:?}", matches); // TODO only in debug
+    info!("with args: {:?}", matches);
 
-    let notes_list = notes.load::<Note>(&globals.db_conn)
-        .expect("Error loading notes"); // TODO copywriting
-
-    info!("{} notes founded", notes_list.len());
-
-    if notes_list.len() > 0 {
-        let mut table = Table::new();
-
-        table.add_row(row!["index", "title", "content size after encrypted", "updated at"]);
-        for (index, note) in notes_list.iter().enumerate() {
-            // TODO dummy timestamp
-            table.add_row(row![index, note.title, note.encrypted_content.len(), "2017-01-01 12:10"]);
-        }
-
-        table.printstd();
-    }
-
+    notes_controller::index(globals);
 }
