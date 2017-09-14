@@ -1,5 +1,7 @@
 extern crate uuid;
 
+#[macro_use] extern crate log;
+
 #[macro_use] extern crate prettytable;
 
 #[macro_use] extern crate clap;
@@ -30,7 +32,7 @@ fn main() {
 }
 
 fn init_globals() -> Globals {
-    println!("init globals...");
+    info!("init globals...");
 
     let db_path = initializers::database::get_db_path_from_env().expect("TODO ENV DB PATH NOT EXISTS");
 
@@ -39,7 +41,7 @@ fn init_globals() -> Globals {
 
     let db_conn = initializers::database::establish_connection(&db_path);
 
-    println!("db_path: {}", db_path);
+    info!("db_path: {}", db_path);
 
     Globals {
         db_path,
@@ -48,8 +50,8 @@ fn init_globals() -> Globals {
 }
 
 fn handle_notes(matches: &ArgMatches, globals: &Globals) {
-    println!("handle notes");
-    println!("{:?}", matches);
+    info!("handle notes");
+    info!("{:?}", matches);
 
     match matches.subcommand_name() {
         Some("new") => {
@@ -63,8 +65,8 @@ fn handle_notes(matches: &ArgMatches, globals: &Globals) {
 }
 
 fn handle_notes_new(matches: &ArgMatches, globals: &Globals) {
-    println!("*** HANDLEING COMMAND: notes new");
-    println!("args: {:?}", matches); // TODO only in debug
+    info!("HANDLEING COMMAND: notes new");
+    info!("args: {:?}", matches); // TODO only in debug
 
     let creating_note_title = matches.value_of("title").unwrap().to_string();
 
@@ -85,13 +87,13 @@ fn handle_notes_list(matches: &ArgMatches, globals: &Globals) {
 
     // ===
 
-    println!("*** HANDLEING COMMAND: notes list");
-    println!("args: {:?}", matches); // TODO only in debug
+    info!("HANDLEING COMMAND: notes list");
+    info!("args: {:?}", matches); // TODO only in debug
 
     let notes_list = notes.load::<Note>(&globals.db_conn)
         .expect("Error loading notes"); // TODO copywriting
 
-    println!("{} notes founded", notes_list.len());
+    info!("{} notes founded", notes_list.len());
 
     if notes_list.len() > 0 {
         let mut table = Table::new();
