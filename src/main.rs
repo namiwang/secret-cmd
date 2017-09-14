@@ -76,15 +76,6 @@ fn handle_notes_new(matches: &ArgMatches, globals: &Globals) {
             panic!("Failed to save the node: {:?}", err)
         }
     }
-
-    // match models::note::create(&globals.db_conn, &creating_note_title) {
-    //     Ok(row_altered) => {
-    //         println!("Note \"{}\" has been saved.", creating_note_title)
-    //     } ,
-    //     Err(err) => {
-    //         panic!("Failed to save the node: {:?}", err)
-    //     }
-    // }
 }
 
 fn handle_notes_list(matches: &ArgMatches, globals: &Globals) {
